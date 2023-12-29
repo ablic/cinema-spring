@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Выбор мест</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a href="" class="navbar-brand">Кинотеатр</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a href="/movies" class="nav-link text-dark">Афиша</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/sessions" class="nav-link text-dark">Сеансы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/genres" class="nav-link text-dark">Жанры</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/countries" class="nav-link text-dark">Страны</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+
+
+        <form th:object="${order}" th:action="@{#}" method="post">
+
+            <span th:if="${#fields.hasErrors('tickets')}" th:errors="*{tickets}" class="text-danger d-block mb-2"></span>
+
+            <div class="d-grid gap-2 mb-2">
+
+                <div th:each="row, rowIndex : ${rows}" class="d-flex justify-content-between">
+                    <th:block th:text="${rowIndex.count}"/>
+                    <div class="d-flex justify-content-center gap-2">
+
+                        <th:block th:each="seat, seatIndex : ${row.seats}">
+
+                            <div th:if="${seat.leftSpace > 0}" th:style="'width: ' + ${seat.leftSpace * 25} + 'px'"></div>
+
+                            <span class="d-inline-block"
+                                  tabindex="0"
+                                  data-bs-toggle="tooltip"
+                                  th:title="'Ряд: ' + ${rowIndex.count} + ', место: ' + ${seatIndex.count} + ', цена: ' + ${seat.ticket.price} + 'руб.'">
+
+                                <th:block th:if="${seat.ticket.ownerEmail != null}">
+                                    <button th:text="${seatIndex.count}" type="button" class="btn btn-sm btn-danger disabled"></button>
+                                </th:block>
+                                <th:block th:unless="${seat.ticket.ownerEmail != null}">
+
+                                    <input type="checkbox"
+                                           name="tickets"
+                                           th:value="${seat.ticket.id}"
+                                           th:id="'btn-check-' + ${rowIndex.count} + '-' + ${seatIndex.count}"
+                                           class="btn-check"
+                                           autocomplete="off">
+                                    <label class="btn btn-outline-success btn-sm"
+                                           th:for="'btn-check-' + ${rowIndex.count} + '-' + ${seatIndex.count}"
+                                           th:text="${seatIndex.count}"></label>
+
+                                </th:block>
+
+                            </span>
+
+                            <div th:if="${seat.rightSpace > 0}" th:style="'width: ' + ${seat.rightSpace * 25} + 'px'"></div>
+
+                        </th:block>
+
+                    </div>
+                    <th:block th:text="${rowIndex.count}"/>
+                </div>
+            </div>
+
+            <input type="submit" value="Далее" class="btn btn-primary">
+
+
+        </form>
+
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2023 - ИС Кинотеатра - <a href="#">Политика конфиденциальности</a>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
